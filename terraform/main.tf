@@ -62,7 +62,7 @@ module "cloudfront" {
   
   domain_alias                    = "${local.domain_url}"
   bucket_regional_domain_name     = module.s3_website.bucket_regional_domain_name
-  cert_arn                        = module.acm_cert.acm_cert_arn)
+  cert_arn                        = module.acm_cert.acm_cert_arn
 }
 
 
