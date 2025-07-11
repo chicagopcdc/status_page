@@ -57,56 +57,21 @@ module "acm_cert" {
   tags = var.default_tags
 }
 
-
-
-
-
-
-
-# CloudFront
-resource "aws_cloudfront_origin_access_identity" "oai" {
-  comment = "OAI for React S3 site"
+module "cloudfront" {
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/cloudfront?ref=dev"
+  
+  domain_alias                    = "${local.domain_url}"
+  bucket_regional_domain_name     = module.s3_website.bucket_regional_domain_name
+  cert_arn                        = module.acm_cert.acm_cert_arn)
 }
 
-resource "aws_cloudfront_distribution" "react_cf" {
-  enabled             = true
-  is_ipv6_enabled     = true
-  default_root_object = "index.html"
 
-  aliases = ["app.yourdomain.com"]
 
-  origin {
-    domain_name = aws_s3_bucket.react_site.bucket_regional_domain_name
-    origin_id   = "s3-react-origin"
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
-    }
-  }
 
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "s3-react-origin"
 
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
 
-    viewer_protocol_policy = "redirect-to-https"
-    compress               = true
-  }
 
-  price_class = "PriceClass_100"
 
-  viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.cert.arn
-    ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1.2_2021"
-  }
-}
 
 # Lambda + API Gateway HTTP API backend
 resource "aws_lambda_function" "backend" {
@@ -133,7 +98,6 @@ resource "aws_iam_role" "lambda_exec" {
     ]
   })
 }
-
 resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
