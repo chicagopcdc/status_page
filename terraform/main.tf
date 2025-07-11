@@ -1,31 +1,41 @@
-# Provider
-provider "aws" {
-  region = "us-east-1"
+locals {  
+  # TF state
+  state_bucket_name           = "${var.app_name}-${var.env_name}-state-bucket"
+  access_s3_state_policy      = "${var.app_name}-${var.env_name}-state-bucket-policy"
+  dynamodb_table_name         = "${var.app_name}-${var.env_name}-dynamodb-table-terraform-state"
+
+  # S3 variables
+  bucket_name                 = "${var.app_name}-${var.env_name}-bucket"
+
+  # ACM
+  domain_url                  = "${var.app_name}-${var.env_name}.${var.base_domain_url}"
 }
 
-resource "random_string" "suffix" {
-  length  = 6
-  upper   = false
-  special = false
+
+
+module "s3_backend" {
+  source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/terraform_s3_state_storage_resources?ref=dev"
+
+  s3_bucket_name              = local.state_bucket_name
+  dynamodb_table_name         = local.dynamodb_table_name
+  policy_name                 = local.access_s3_state_policy
+
+  tags = var.default_tags
 }
 
-# S3 bucket
-resource "aws_s3_bucket" "react_site" {
-  bucket = "my-react-app-site-${random_string.suffix.result}"
-  force_destroy = true
+module "s3_website" {
+  source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/s3?ref=dev"
+  
+  bucket_name                 = "${local.bucket_name}"
+  force_delete                = var.s3_force_delete
+  enable_lifecycle            = false
+  versioning                  = false
+  enable_website_hosting      = true
+  encryption                  = false
 }
 
-resource "aws_s3_bucket_public_access_block" "react_site_block" {
-  bucket = aws_s3_bucket.react_site.id
-
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
-}
-
-resource "aws_s3_bucket_policy" "react_site_policy" {
-  bucket = aws_s3_bucket.react_site.id
+resource "aws_s3_bucket_policy" "website_policy" {
+  bucket = module.s3_website.bucket_id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -34,29 +44,24 @@ resource "aws_s3_bucket_policy" "react_site_policy" {
         Effect    = "Allow",
         Principal = "*",
         Action    = ["s3:GetObject"],
-        Resource  = ["${aws_s3_bucket.react_site.arn}/*"]
+        Resource  = ["${module.s3_website.bucket_arn}/*"]
       }
     ]
   })
 }
 
-resource "aws_s3_bucket_website_configuration" "react_site_web" {
-  bucket = aws_s3_bucket.react_site.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "index.html"
-  }
+module "acm_cert" {
+  source                    = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/acm?ref=dev"
+  
+  domain_url                = "${local.domain_url}"
+  tags = var.default_tags
 }
 
-# ACM Certificate (manually validate in GoDaddy)
-resource "aws_acm_certificate" "cert" {
-  domain_name       = "app.yourdomain.com" # replace with your subdomain
-  validation_method = "DNS"
-}
+
+
+
+
+
 
 # CloudFront
 resource "aws_cloudfront_origin_access_identity" "oai" {
@@ -164,4 +169,3 @@ resource "aws_apigatewayv2_stage" "default_stage" {
   name        = "$default"
   auto_deploy = true
 }
-
