@@ -47,3 +47,9 @@ variable "lambda_file_name" {
   type = string
   default = "string used for the s3 bucket access role"
 }
+
+variable "manual_step" {
+  description   = "The name of the environment"
+  type          = bool
+  default       = false
+}

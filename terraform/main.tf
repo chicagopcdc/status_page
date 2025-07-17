@@ -66,6 +66,8 @@ module "cloudfront" {
   domain_alias                    = "${local.domain_url}"
   bucket_regional_domain_name     = module.s3_website.bucket_regional_domain_name
   cert_arn                        = module.acm_cert.acm_cert_arn
+
+  count                           = var.manual_step ? 1 : 0
 }
 
 resource "aws_iam_role" "lambda_exec" {
@@ -106,41 +108,21 @@ module "lambda_backend" {
   tags                            =  var.default_tags
 }
 
-
-
-
-
-
-
-
-
-resource "aws_apigatewayv2_api" "http_api" {
-  name          = "react-backend-api"
-  protocol_type = "HTTP"
+module "api_gateway" {
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/api_gateway?ref=dev"
+  
+  app_name                        = "react-backend"
+  endpoint_path                   = "$default"
+  stage                           = ""
+  http_method                     = ""
+  http_method_integration         = ""
+  lambda_invoke_arn               = module.lambda_backend.lambda_invoke_arn
+  lambda_name                     = module.lambda_backend.lambda_name
+  allowed_source_ips              = ["*"]
+  api_type                        = "HTTP"
 }
 
-resource "aws_apigatewayv2_integration" "lambda_integration" {
-  api_id           = aws_apigatewayv2_api.http_api.id
-  integration_type = "AWS_PROXY"
-  integration_uri  = module.lambda_backend.lambda_invoke_arn
-}
 
-resource "aws_apigatewayv2_route" "default_route" {
-  api_id    = aws_apigatewayv2_api.http_api.id
-  route_key = "$default"
-  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
-}
 
-resource "aws_lambda_permission" "api_gw" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = module.lambda_backend.lambda_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
-}
 
-resource "aws_apigatewayv2_stage" "default_stage" {
-  api_id      = aws_apigatewayv2_api.http_api.id
-  name        = "$default"
-  auto_deploy = true
-}
+
