@@ -11,8 +11,6 @@ output "cert_dom_name" {
   value = module.acm_cert.certificate_domain_name
 }
 
-
-
 output "api_gateway_url" {
   value = aws_apigatewayv2_api.http_api.api_endpoint
 }

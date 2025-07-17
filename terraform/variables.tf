@@ -32,3 +32,18 @@ variable "default_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "lambda_function_source_dir" {
+  type = string
+  default = "string used for the s3 bucket access role"
+}
+
+variable "lambda_function_output_path" {
+  type = string
+  default = "string used for the s3 bucket access role"
+}
+
+variable "lambda_file_name" {
+  type = string
+  default = "string used for the s3 bucket access role"
+}

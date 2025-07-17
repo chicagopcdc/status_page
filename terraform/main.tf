@@ -9,6 +9,9 @@ locals {
 
   # ACM
   domain_url                  = "${var.app_name}-${var.env_name}.${var.base_domain_url}"
+
+
+  lambda_function_name        = "${var.app_name}-${var.env_name}-backend-lambda"
 }
 
 
@@ -65,24 +68,6 @@ module "cloudfront" {
   cert_arn                        = module.acm_cert.acm_cert_arn
 }
 
-
-
-
-
-
-
-
-
-# Lambda + API Gateway HTTP API backend
-resource "aws_lambda_function" "backend" {
-  filename         = "lambda_function_payload.zip"
-  function_name    = "react-backend"
-  role             = aws_iam_role.lambda_exec.arn
-  handler          = "index.handler"
-  runtime          = "python3.12"
-  source_code_hash = filebase64sha256("lambda_function_payload.zip")
-}
-
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
   assume_role_policy = jsonencode({
@@ -103,6 +88,32 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+module "lambda_backend" {
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/lambda_local_file?ref=dev"
+  
+  lambda_function_name            = local.lambda_function_name
+  lambda_function_source_dir      = var.lambda_function_source_dir
+  lambda_function_output_path     = var.lambda_function_output_path
+  lambda_file_name                = var.lambda_file_name
+  lambda_role_arn                 = aws_iam_role.lambda_exec.arn
+  handler                         = "status_lambda.handler"
+  timeout                         = "600"
+  memory_size                     = "128"
+  runtime                         = "python3.10"
+  lambda_environment_variables    = {
+                                      VAR_1       = "test"
+                                    }
+  tags                            =  var.default_tags
+}
+
+
+
+
+
+
+
+
+
 resource "aws_apigatewayv2_api" "http_api" {
   name          = "react-backend-api"
   protocol_type = "HTTP"
@@ -111,7 +122,7 @@ resource "aws_apigatewayv2_api" "http_api" {
 resource "aws_apigatewayv2_integration" "lambda_integration" {
   api_id           = aws_apigatewayv2_api.http_api.id
   integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.backend.invoke_arn
+  integration_uri  = module.lambda_backend.lambda_invoke_arn
 }
 
 resource "aws_apigatewayv2_route" "default_route" {
@@ -123,7 +134,7 @@ resource "aws_apigatewayv2_route" "default_route" {
 resource "aws_lambda_permission" "api_gw" {
   statement_id  = "AllowAPIGatewayInvoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.backend.function_name
+  function_name = module.lambda_backend.lambda_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
 }
