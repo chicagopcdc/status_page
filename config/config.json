@@ -1,0 +1,45 @@
+{
+  "hostnames": {
+    "https://portal.pedscommons.org": [
+      "user/",
+      "api/",
+      "peregrine/",
+      "index/",
+      "guppy/",
+      "amanuensis/",
+      "analysis/",
+      "authz/",
+      "manifests/",
+      "/",
+      "wts/"
+    ],
+    "https://gearbox.pedscommons.org": ["/", "user/", "gearbox/"]
+  },
+  "urlToTitleDataMap": {
+    "user/": "fence",
+    "api/": "sheepdog-service",
+    "peregrine/": "peregrine-service",
+    "index/": "indexd-service",
+    "guppy/": "guppy-service",
+    "amanuensis/": "amanuensis",
+    "analysis/": "analysis",
+    "authz/": "arborist-service",
+    "manifests/": "manifestservice-service",
+    "/": "portal",
+    "wts/": "workspace-token-service"
+  },
+  "bannerConfig": {
+    "colors": {
+      "success": "rgb(180, 233, 180)",
+      "fail": "rgb(236, 203, 207)",
+      "idle": "rgb(211, 214, 218)",
+      "maintenance": "rgb(181, 218, 235)"
+    },
+    "message": {
+      "success": "All systems operational",
+      "fail": "Some systems are down",
+      "idle": "Loading Status",
+      "maintenance": "Some systems are under maintenance"
+    }
+  }
+}
