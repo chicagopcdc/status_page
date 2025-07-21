@@ -1,0 +1,22 @@
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-left: 30px;
+  margin-bottom: 40px;
+}
+
+.status-component {
+  padding: 20px;
+  border: 1px solid grey;
+  border-collapse: collapse;
+  margin-left: -1px;
+  margin-top: -1px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.component-title {
+  color: black;
+  font-weight: bold;
+}

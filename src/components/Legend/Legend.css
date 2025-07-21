@@ -1,0 +1,12 @@
+.legend-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100px;
+}
+
+.item-pair {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
