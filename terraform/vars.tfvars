@@ -1,3 +1,4 @@
+env_name                        = "dev"
 base_domain_url                 = "pedscommons.org"
 
 default_tags                    =  {

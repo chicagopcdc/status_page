@@ -8,8 +8,7 @@ locals {
   bucket_name                 = "${var.app_name}-${var.env_name}-bucket"
 
   # ACM
-  domain_url                  = "${var.app_name}-${var.env_name}.${var.base_domain_url}"
-
+  domain_url                  = "${var.app_name}${var.env_name != "prod" ? "-${var.env_name}" : ""}.${var.base_domain_url}"
 
   lambda_function_name        = "${var.app_name}-${var.env_name}-backend-lambda"
 }
