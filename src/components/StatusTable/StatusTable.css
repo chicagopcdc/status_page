@@ -1,0 +1,16 @@
+.status-page-container {
+  width: 95%;
+}
+
+.title {
+  margin-left: 30px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-decoration: underline;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+}

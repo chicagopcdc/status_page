@@ -1,4 +1,11 @@
 # status_page
+This app uses vite with the Javascript variant of React.
+
+`npm install` when opening the repo for the first time
+
+`npm run dev` to start the development server
+
+
 
 #TODO in the github action add the folder name to the react code
 
@@ -16,3 +23,4 @@ The REACT site should be pushed to S3 aumatically with the github action, but if
 1. `npm run build`
 2. `aws s3 sync build/ s3://your-bucket-name --delete`
 3. `aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"`
+
