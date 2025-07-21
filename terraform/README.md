@@ -7,7 +7,7 @@
 6. switch `manual_step` to true
 7. RE run the apply
 8. Add a CNAME in GoDaddy:
-    - Name: `app`
+    - Name: `your subdomain`
     - Value: your CloudFront domain (e.g., `d1234abcd.cloudfront.net`)
 
 
