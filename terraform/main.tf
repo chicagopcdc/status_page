@@ -57,6 +57,10 @@ module "acm_cert" {
   
   domain_url                = "${local.domain_url}"
   tags = var.default_tags
+
+  providers = {
+    aws = aws.use1
+  }
 }
 
 module "cloudfront" {
