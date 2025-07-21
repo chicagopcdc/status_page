@@ -32,7 +32,7 @@ module "s3_website" {
   bucket_name                 = "${local.bucket_name}"
   force_delete                = var.s3_force_delete
   enable_lifecycle            = false
-  versioning                  = false
+  versioning                  = "Disabled"
   enable_website_hosting      = true
   encryption                  = false
 }
