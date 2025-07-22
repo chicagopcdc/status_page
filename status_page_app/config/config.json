@@ -14,7 +14,7 @@
       "wts/"
     ],
     "https://gearbox.pedscommons.org": ["/", "user/", "gearbox/"],
-    "https://ccdifederation.pedscommons.org": ["/api/v1/_status"]
+    "https://ccdifederation.pedscommons.org": ["/api/v1/"]
   },
   "urlToTitleDataMap": {
     "user/": "fence",
