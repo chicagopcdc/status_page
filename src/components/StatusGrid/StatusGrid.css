@@ -13,7 +13,7 @@
   margin-top: -1px;
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  max-height: 120px;
 }
 
 .component-title {
