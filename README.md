@@ -31,6 +31,12 @@ Configuration data is located at `config/config.json`. Currently, the file confi
 - `AWS_ACCESS_KEY_ID`: Your AWS access key.
 - `AWS_SECRET_ACCESS_KEY`: Your AWS secret key.
 - `S3_BUCKET_NAME`: The S3 bucket name created by Terraform.
+- `AWS_REGION`: The AWS region where the resources are
+- `CLOUDFRONT_DISTRIBUTION_ID`: The cloudfront distribution ID to invalidate the cache
+
+The IAM user/role tied to these AWS credentials needs:
+- s3:PutObject, s3:DeleteObject, s3:ListBucket on your bucket.
+- cloudfront:CreateInvalidation on your distribution.
 
 
 # React site
