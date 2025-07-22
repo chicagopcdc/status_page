@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'react-app/**'
+      - 'status_page_app/**'
 
 jobs:
   deploy:
@@ -21,12 +21,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd react-app
+          cd status_page_app
           npm install
 
       - name: Build React app
         run: |
-          cd react-app
+          cd status_page_app
           npm run build
 
       - name: Deploy to S3
@@ -34,7 +34,7 @@ jobs:
         with:
           bucket: ${{ secrets.S3_BUCKET_NAME }}
           region: ${{ secrets.AWS_REGION }}
-          source-dir: "react-app/build"
+          source-dir: "status_page_app/dist"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
