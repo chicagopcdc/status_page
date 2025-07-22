@@ -1,5 +1,6 @@
 import './StatusGrid.css';
 import Icon from '../Icon/Icon';
+import Spinner from '../Spinner/Spinner';
 
 function StatusGrid({ statuses, filterUrl, deriveTitle }) {
   return (
@@ -14,7 +15,12 @@ function StatusGrid({ statuses, filterUrl, deriveTitle }) {
               <p className='component-title'>{deriveTitle(status.endpoint)}</p>
               <p> url path: {status.endpoint} </p>
             </div>
-            <Icon status={status.status} />
+            {status.status !== 'idle' && (
+              <Icon className='icon' status={status.status} />
+            )}
+            {status.status === 'idle' && (
+              <Spinner text='loading status' width='30' />
+            )}
           </div>
         ))}
     </div>
