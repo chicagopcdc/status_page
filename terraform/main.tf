@@ -14,6 +14,7 @@ locals {
 }
 
 
+data "aws_caller_identity" "current" {}
 
 module "s3_backend" {
   source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/terraform_s3_state_storage_resources?ref=0.6.0"
@@ -125,6 +126,52 @@ module "api_gateway" {
   api_type                        = "HTTP"
 }
 
+
+resource "aws_iam_user" "github_actions" {
+  name = "github-actions-deployer"
+  
+  count                           = var.manual_step ? 1 : 0
+}
+resource "aws_iam_access_key" "github_actions_key" {
+  user = aws_iam_user.github_actions[0].name
+
+  count                           = var.manual_step ? 1 : 0
+}
+resource "aws_iam_policy" "github_actions_policy" {
+  name        = "github-actions-deploy-policy"
+  description = "Permissions for GitHub Actions to deploy to S3 and invalidate CloudFront"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        Resource = [
+          "${module.s3_website.bucket_arn}",
+          "${module.s3_website.bucket_arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = "cloudfront:CreateInvalidation",
+        Resource = "arn:aws:cloudfront::${data.aws_caller_identity.current.account_id}:distribution/${module.cloudfront[0].cloudfront_distribution_id}"
+      }
+    ]
+  })
+
+  count                           = var.manual_step ? 1 : 0
+}
+resource "aws_iam_user_policy_attachment" "github_actions_attach" {
+  user       = aws_iam_user.github_actions[0].name
+  policy_arn = aws_iam_policy.github_actions_policy[0].arn
+
+  count                           = var.manual_step ? 1 : 0
+}
 
 
 

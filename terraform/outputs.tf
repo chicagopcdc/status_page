@@ -22,3 +22,13 @@ output "cloudfront_domain" {
 output "cloudfront_distribution_id" {
   value = length(module.cloudfront) > 0 ? module.cloudfront[0].cloudfront_distribution_id : null
 }
+
+output "github_actions_access_key_id" {
+  value     = length(aws_iam_access_key.github_actions_key) > 0 ? aws_iam_access_key.github_actions_key[0].id : null
+  sensitive = true
+}
+
+output "github_actions_secret_access_key" {
+  value     = length(aws_iam_access_key.github_actions_key) > 0 ? aws_iam_access_key.github_actions_key[0].secret : null
+  sensitive = true
+}
