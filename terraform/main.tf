@@ -16,7 +16,7 @@ locals {
 
 
 module "s3_backend" {
-  source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/terraform_s3_state_storage_resources?ref=dev"
+  source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/terraform_s3_state_storage_resources?ref=0.6.0"
 
   s3_bucket_name              = local.state_bucket_name
   dynamodb_table_name         = local.dynamodb_table_name
@@ -26,7 +26,7 @@ module "s3_backend" {
 }
 
 module "s3_website" {
-  source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/s3?ref=dev"
+  source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/s3?ref=0.6.0"
   
   bucket_name                 = "${local.bucket_name}"
   force_delete                = var.s3_force_delete
@@ -53,7 +53,7 @@ resource "aws_s3_bucket_policy" "website_policy" {
 }
 
 module "acm_cert" {
-  source                    = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/acm?ref=dev"
+  source                    = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/acm?ref=0.6.0"
   
   domain_url                = "${local.domain_url}"
   tags = var.default_tags
@@ -64,7 +64,7 @@ module "acm_cert" {
 }
 
 module "cloudfront" {
-  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/cloudfront?ref=dev"
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/cloudfront?ref=0.6.0"
   
   domain_alias                    = "${local.domain_url}"
   bucket_regional_domain_name     = module.s3_website.bucket_regional_domain_name
@@ -94,7 +94,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
 }
 
 module "lambda_backend" {
-  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/lambda_local_file?ref=dev"
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/lambda_local_file?ref=0.6.0"
   
   lambda_function_name            = local.lambda_function_name
   lambda_function_source_dir      = var.lambda_function_source_dir
@@ -112,7 +112,7 @@ module "lambda_backend" {
 }
 
 module "api_gateway" {
-  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/api_gateway?ref=dev"
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/api_gateway?ref=0.6.0"
   
   app_name                        = "react-backend"
   endpoint_path                   = "$default"
