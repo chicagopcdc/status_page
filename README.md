@@ -21,6 +21,5 @@ This app uses vite with the Javascript variant of React.
 # React site
 The REACT site should be pushed to S3 aumatically with the github action, but if you need to do it manually the process is:
 1. `npm run build`
-2. `aws s3 sync build/ s3://your-bucket-name --delete`
-3. `aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths "/*"`
-
+2. `aws s3 sync dist/ s3://d4cg-status-prod-bucket --delete --profile luca_pcdc_prod`
+3. `aws cloudfront create-invalidation --distribution-id ENO6Q90NRR8H9 --paths "/*" --profile luca_pcdc_prod`
