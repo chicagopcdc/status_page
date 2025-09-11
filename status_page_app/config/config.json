@@ -13,7 +13,7 @@
       "/",
       "wts/"
     ],
-    "https://gearbox.pedscommons.org": ["/", "user/", "gearbox/"],
+    "https://gearbox.pedscommons.org": ["/", "user/", "gearbox/", "gearbox-middleware/"],
     "https://ccdifederation.pedscommons.org": ["/api/v1/"]
   },
   "urlToTitleDataMap": {
