@@ -1,9 +1,4 @@
 locals {  
-  # TF state
-  state_bucket_name           = "${var.app_name}-${var.env_name}-state-bucket"
-  access_s3_state_policy      = "${var.app_name}-${var.env_name}-state-bucket-policy"
-  dynamodb_table_name         = "${var.app_name}-${var.env_name}-dynamodb-table-terraform-state"
-
   # S3 variables
   bucket_name                 = "${var.app_name}-${var.env_name}-bucket"
 
@@ -15,16 +10,6 @@ locals {
 
 
 data "aws_caller_identity" "current" {}
-
-module "s3_backend" {
-  source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/terraform_s3_state_storage_resources?ref=0.6.0"
-
-  s3_bucket_name              = local.state_bucket_name
-  dynamodb_table_name         = local.dynamodb_table_name
-  policy_name                 = local.access_s3_state_policy
-
-  tags = var.default_tags
-}
 
 module "s3_website" {
   source                      = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/s3?ref=0.6.0"
