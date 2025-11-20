@@ -110,6 +110,13 @@ function App() {
         statuses={statuses}
         urlToTitleDataMap={urlToTitleDataMap}
       />
+      <footer style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
+        <p>
+          <a href="/privacy-policy" target="_blank" rel="https://docs.pedscommons.org/PcdcPrivacyNotice/">
+            Privacy Policy
+          </a>
+        </p>
+      </footer>
     </>
   );
 }
