@@ -52,7 +52,7 @@ function App() {
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         const json = await response.json();
-        if (json.status && json.status.toLowerCase() === 'maintenance') {
+        if (json.status && String(json.status).toLowerCase() === 'maintenance') {
           return 'maintenance';
         }
       }
