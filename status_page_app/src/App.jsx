@@ -112,7 +112,7 @@ function App() {
       />
       <footer style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.9rem' }}>
         <p>
-          <a href="/privacy-policy" target="_blank" rel="https://docs.pedscommons.org/PcdcPrivacyNotice/">
+          <a href="https://docs.pedscommons.org/PcdcPrivacyNotice/" target="_blank" rel="noopener noreferrer">
             Privacy Policy
           </a>
         </p>
