@@ -1,33 +1,35 @@
 {
   "hostnames": {
     "https://portal.pedscommons.org": [
-      "user/",
-      "api/",
-      "peregrine/",
-      "index/",
-      "guppy/",
-      "amanuensis/",
-      "analysis/",
-      "authz/",
-      "manifests/",
-      "/",
-      "wts/"
+      "user/_status",
+      "api/_status",
+      "peregrine/_status",
+      "index/_status",
+      "guppy/_status",
+      "amanuensis/_status",
+      "analysis/_status",
+      "authz/_status",
+      "manifests/_status",
+      "/_status",
+      "wts/_status",
+      "/"
     ],
-    "https://gearbox.pedscommons.org": ["/", "user/", "gearbox/", "gearbox-middleware/"],
-    "https://ccdifederation.pedscommons.org": ["/api/v1/"]
+    "https://gearbox.pedscommons.org": ["/", "/_status", "user/_status", "gearbox/_status", "gearbox-middleware/_status"],
+    "https://ccdifederation.pedscommons.org": ["/api/v1/_status"]
   },
   "urlToTitleDataMap": {
-    "user/": "fence",
-    "api/": "sheepdog-service",
-    "peregrine/": "peregrine-service",
-    "index/": "indexd-service",
-    "guppy/": "guppy-service",
-    "amanuensis/": "amanuensis",
-    "analysis/": "analysis",
-    "authz/": "arborist-service",
-    "manifests/": "manifestservice-service",
-    "/": "portal",
-    "wts/": "workspace-token-service"
+    "user/_status": "fence-service",
+    "api/_status": "sheepdog-service",
+    "peregrine/_status": "peregrine-service",
+    "index/_status": "indexd-service",
+    "guppy/_status": "guppy-service",
+    "amanuensis/_status": "amanuensis",
+    "analysis/_status": "analysis-service",
+    "authz/_status": "arborist-service",
+    "manifests/_status": "manifestservice-service",
+    "/_status": "revproxy-service",
+    "wts/_status": "workspace-token-service",
+    "/": "portal-service"
   },
   "bannerConfig": {
     "colors": {

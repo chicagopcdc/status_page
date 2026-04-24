@@ -42,7 +42,7 @@ function App() {
   async function fetchStatus(url, endpoint) {
     const rightTrimUrl = url.replace(/\/$/, '');
     const leftTrimEndpoint = endpoint.replace(/^\//, '');
-    const endpoint_url = `${rightTrimUrl}/${leftTrimEndpoint}_status`;
+    const endpoint_url = `${rightTrimUrl}/${leftTrimEndpoint}`;
     try {
       const response = await fetch(endpoint_url, {
         method: 'GET',
