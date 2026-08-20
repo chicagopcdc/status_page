@@ -1,4 +1,4 @@
-locals {  
+locals {
   # S3 variables
   bucket_name                 = "${var.app_name}-${var.env_name}-bucket"
 
@@ -6,6 +6,11 @@ locals {
   domain_url                  = "${var.app_name}${var.env_name != "prod" ? "-${var.env_name}" : ""}.${var.base_domain_url}"
 
   lambda_function_name        = "${var.app_name}-${var.env_name}-backend-lambda"
+
+  # Scheduled status check
+  state_bucket_name           = "${var.app_name}-${var.env_name}-status-state"
+  sns_topic_name              = "${var.app_name}-${var.env_name}-alerts"
+  status_cron_rule_name       = "${var.app_name}-${var.env_name}-status-cron"
 }
 
 
@@ -90,11 +95,70 @@ module "lambda_backend" {
   handler                         = "status_lambda.handler"
   timeout                         = "600"
   memory_size                     = "128"
-  runtime                         = "python3.10"
+  # Python 3.10 reaches end of support in October; 3.12 is the current
+  # supported runtime and the deps (requests, boto3) are unaffected.
+  runtime                         = "python3.12"
   lambda_environment_variables    = {
-                                      VAR_1       = "test"
+                                      STATE_BUCKET    = module.s3_status_state.bucket_id
+                                      STATE_KEY       = var.status_state_key
+                                      SNS_TOPIC_ARN   = module.sns_alerts.topic_arn
+                                      REQUEST_TIMEOUT = var.status_request_timeout
                                     }
   tags                            =  var.default_tags
+}
+
+# --- scheduled status check -------------------------------------------------
+# Private bucket holding the previous run's result. The cron compares against
+# it so a service that stays down is reported once, not every 15 minutes.
+# Deliberately separate from the public website bucket, which is world-readable
+# and wiped by the `aws s3 sync --delete` in the deploy workflow.
+module "s3_status_state" {
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/s3?ref=0.6.0"
+
+  bucket_name                     = local.state_bucket_name
+  force_delete                    = var.s3_force_delete
+  enable_lifecycle                = false
+  versioning                      = "Disabled"
+  enable_website_hosting          = false
+  encryption                      = true
+}
+
+module "sns_alerts" {
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/sns?ref=0.6.0"
+
+  topic_name                      = local.sns_topic_name
+  notification_emails             = var.notification_emails
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_sns_publish" {
+  role                            = aws_iam_role.lambda_exec.name
+  policy_arn                      = module.sns_alerts.policy_arn
+}
+
+resource "aws_iam_role_policy" "lambda_status_state" {
+  name = "${local.lambda_function_name}-status-state-access"
+  role = aws_iam_role.lambda_exec.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["s3:GetObject", "s3:PutObject"],
+        Resource = "${module.s3_status_state.bucket_arn}/*"
+      }
+    ]
+  })
+}
+
+module "status_cron" {
+  source                          = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/eventbridge_lambda_trigger?ref=0.6.0"
+
+  event_rule_name                 = local.status_cron_rule_name
+  schedule_expression             = var.status_check_schedule
+  target_id                       = "${local.lambda_function_name}-status-cron"
+  lambda_arn                      = module.lambda_backend.lambda_arn
+  lambda_name                     = module.lambda_backend.lambda_name
 }
 
 module "api_gateway" {

@@ -23,6 +23,16 @@ output "cloudfront_distribution_id" {
   value = length(module.cloudfront) > 0 ? module.cloudfront[0].cloudfront_distribution_id : null
 }
 
+output "status_alerts_topic_arn" {
+  description = "SNS topic the scheduled status check publishes to. Each email subscription must be confirmed before alerts arrive."
+  value       = module.sns_alerts.topic_arn
+}
+
+output "status_state_bucket" {
+  description = "Bucket holding the previous status-check result."
+  value       = module.s3_status_state.bucket_name
+}
+
 output "github_actions_access_key_id" {
   value     = length(aws_iam_access_key.github_actions_key) > 0 ? aws_iam_access_key.github_actions_key[0].id : null
   sensitive = true
