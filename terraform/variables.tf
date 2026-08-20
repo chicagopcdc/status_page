@@ -53,3 +53,28 @@ variable "manual_step" {
   type          = bool
   default       = false
 }
+
+# --- scheduled status check -------------------------------------------------
+variable "notification_emails" {
+  description = "Addresses subscribed to the status alert SNS topic. Each subscription must be confirmed from the email AWS sends before alerts are delivered."
+  type        = list(string)
+  default     = ["pcdc_help@lists.uchicago.edu"]
+}
+
+variable "status_check_schedule" {
+  description = "EventBridge schedule expression controlling how often the status check runs."
+  type        = string
+  default     = "rate(15 minutes)"
+}
+
+variable "status_state_key" {
+  description = "Key in the state bucket holding the previous run's result, used to alert only on change."
+  type        = string
+  default     = "status/last_state.json"
+}
+
+variable "status_request_timeout" {
+  description = "Per-endpoint HTTP timeout in seconds. Matches the timeout the React status page uses."
+  type        = string
+  default     = "3"
+}

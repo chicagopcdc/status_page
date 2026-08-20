@@ -12,3 +12,7 @@ lambda_file_name				= "../dist/status_lambda/lambda.zip"
 
 
 manual_step                     = false
+
+#--------- SCHEDULED STATUS CHECK ---------
+notification_emails             = ["pcdc_help@lists.uchicago.edu"]
+status_check_schedule           = "rate(15 minutes)"
