@@ -44,7 +44,7 @@ resource "aws_s3_bucket_policy" "website_policy" {
 }
 
 module "acm_cert" {
-  source                    = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/acm?ref=0.6.0"
+  source                    = "git::ssh://git@github.com/chicagopcdc/terraform_modules.git//aws/acm?ref=1.0.11"
   
   domain_url                = "${local.domain_url}"
   tags = var.default_tags
