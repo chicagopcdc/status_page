@@ -95,9 +95,9 @@ module "lambda_backend" {
   handler                         = "status_lambda.handler"
   timeout                         = "600"
   memory_size                     = "128"
-  # Python 3.10 reaches end of support in October; 3.12 is the current
-  # supported runtime and the deps (requests, boto3) are unaffected.
-  runtime                         = "python3.12"
+  # Python 3.13 runtime; the deps (requests, boto3) are pure Python and
+  # unaffected. Keep in sync with python in status_lambda/src/pyproject.toml.
+  runtime                         = "python3.13"
   lambda_environment_variables    = {
                                       STATE_BUCKET    = module.s3_status_state.bucket_id
                                       STATE_KEY       = var.status_state_key
